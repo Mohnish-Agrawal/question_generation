@@ -24,6 +24,7 @@ class QGPipeline:
         ans_tokenizer: PreTrainedTokenizer,
         qg_format: str,
         use_cuda: bool
+        nos_questions: Optional[int] = 4
     ):
         self.model = model
         self.tokenizer = tokenizer
@@ -45,6 +46,8 @@ class QGPipeline:
             self.model_type = "t5"
         else:
             self.model_type = "bart"
+        
+        self.num_beams = nos_questions
 
     def __call__(self, inputs: str):
         inputs = " ".join(inputs.split())
@@ -71,7 +74,7 @@ class QGPipeline:
             input_ids=inputs['input_ids'].to(self.device), 
             attention_mask=inputs['attention_mask'].to(self.device), 
             max_length=32,
-            num_beams=4,
+            num_beams=self.num_beams,
         )
         
         questions = [self.tokenizer.decode(ids, skip_special_tokens=True) for ids in outs]
