@@ -24,7 +24,7 @@ class QGPipeline:
         ans_tokenizer: PreTrainedTokenizer,
         qg_format: str,
         use_cuda: bool
-        nos_questions: Optional[int] = 4
+        num_questions: Optional[int] = 4
     ):
         self.model = model
         self.tokenizer = tokenizer
@@ -47,7 +47,7 @@ class QGPipeline:
         else:
             self.model_type = "bart"
         
-        self.num_beams = nos_questions
+        self.num_beams = num_questions
 
     def __call__(self, inputs: str):
         inputs = " ".join(inputs.split())
@@ -316,6 +316,7 @@ def pipeline(
     ans_model: Optional = None,
     ans_tokenizer: Optional[Union[str, PreTrainedTokenizer]] = None,
     use_cuda: Optional[bool] = True,
+    num_questions: Optional[int] = 4
     **kwargs,
 ):
     # Retrieve the task
@@ -384,6 +385,6 @@ def pipeline(
     if task == "e2e-qg":
         return task_class(model=model, tokenizer=tokenizer, use_cuda=use_cuda)
     elif task == "question-generation":
-        return task_class(model=model, tokenizer=tokenizer, ans_model=ans_model, ans_tokenizer=ans_tokenizer, qg_format=qg_format, use_cuda=use_cuda)
+        return task_class(model=model, tokenizer=tokenizer, ans_model=ans_model, ans_tokenizer=ans_tokenizer, qg_format=qg_format, use_cuda=use_cuda, num_questions = num_questions)
     else:
         return task_class(model=model, tokenizer=tokenizer, ans_model=model, ans_tokenizer=tokenizer, qg_format=qg_format, use_cuda=use_cuda)
